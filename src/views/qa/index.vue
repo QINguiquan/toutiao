@@ -1,12 +1,12 @@
 <template>
-  <div>    
-    <router-view> </router-view>
-  </div>  
+  <div class="qa-continer">
+      qa
+  </div>
 </template>
 
 <script>
 export default {
-  name:'App'
+    name:'QaIndex'
 
 }
 </script>
