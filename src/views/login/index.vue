@@ -1,6 +1,11 @@
 <template>
   <div class="login">
-    <van-nav-bar title="登录" />
+    <van-nav-bar title="登录" class="page-nav-bar">
+      <!-- 返回原来的地方 -->
+      <van-icon slot="left" name="cross" @click="$router.back()" />
+    </van-nav-bar>
+
+    
     <van-form ref="loginForm" @submit="onSubmit">
       <van-field
         v-model="user.mobile"
@@ -94,6 +99,7 @@ export default {
         this.$store.commit('setUser',data.data)  
         console.log(data.data);      
         Toast.success("登录成功");
+        this.$router.back()
       } catch (err) {
         if (err.response.status === 400) {
           console.log("手机号码或者验证码错误", err);

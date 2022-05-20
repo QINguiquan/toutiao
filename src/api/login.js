@@ -1,3 +1,4 @@
+
 import request from "@/utils/request";
 export const login = data => {
     return request({
@@ -5,7 +6,7 @@ export const login = data => {
         url: '/app/v1_0/authorizations',
         data
     })
-}  
+}
 
 
 
@@ -14,6 +15,17 @@ export const login = data => {
 export const sendSm = mobile => {
     return request({
         method: 'GET',
-        url: `/app/v1_0/sms/codes/${mobile}`        
+        url: `/app/v1_0/sms/codes/${mobile}`
+    })
+}
+
+
+
+// 用户自己的信息 
+export const getUserInfo = () => {
+    return request({
+        method: 'GET',
+        url: '/app/v1_0/user',
+        // Authorization:`Bearer ${store.state.user.token}`
     })
 } 
