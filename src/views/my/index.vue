@@ -102,14 +102,14 @@ export default {
         })
         .catch(() => {
           // on cancel
-          console.log("no");
+          // console.log("no");
         });
     },
     async loadUserInfo(){     
       try {
         const {data} =await getUserInfo()
         this.userInfo=data.data 
-        console.log(this.userInfo);
+       
       } catch (error) {
          Toast('获取数据失败，请稍后重试')
         

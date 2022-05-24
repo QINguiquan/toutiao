@@ -97,14 +97,13 @@ export default {
       try {
         const {data} = await login(user)
         this.$store.commit('setUser',data.data)  
-        console.log(data.data);      
         Toast.success("登录成功");
         this.$router.back()
       } catch (err) {
         if (err.response.status === 400) {
-          console.log("手机号码或者验证码错误", err);
+          Toast("手机号码或者验证码错误", err);
         } else {
-          console.log("请稍后重试");
+          Toast("请稍后重试");
         }
       }
     },
@@ -113,7 +112,7 @@ export default {
       try {
         await this.$refs.loginForm.validate("mobile");
       } catch (error) {
-        return console.log("验证失败", error);
+        return Toast("验证失败", error);
       }
       this.isShow = true;
       try {
@@ -121,16 +120,16 @@ export default {
         await ress
         // this.$toast("发送成功");
         Toast('发送成功')
-        console.log(ress);
+        // console.log(ress);
       } catch (error) {
         this.isShow = false;
-        console.log(error.response.status);
+        // console.log(error.response.status);
         if (error.response.status === 429) {          
           // this.$toast("验证码发送频繁");
           Toast('验证码发送频繁')
         } else {        
           // this.$toast("验证码发送失败", error);
-          Toast('验证码发送失败", error')
+          Toast('验证码发送失败')
         }
       }
     },
