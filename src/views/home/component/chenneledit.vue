@@ -4,9 +4,14 @@
     <!-- 我的频道 -->
     <van-cell :border="false">
       <div slot="title" class="title-text">我的频道</div>
-      <van-button type="danger" plain round size="mini" class="edit-btn"
-      @click="isedit=!isedit"
-        >{{isedit?'完成':"编辑"}}</van-button
+      <van-button
+        type="danger"
+        plain
+        round
+        size="mini"
+        class="edit-btn"
+        @click="isedit = !isedit"
+        >{{ isedit ? "完成" : "编辑" }}</van-button
       >
     </van-cell>
     <van-grid :gutter="10" class="my-grid">
@@ -14,9 +19,13 @@
         class="grid-item"
         v-for="(mychennel, index) in chennel"
         :key="index"
-        @click="onmychanelfn(mychennel,index)"
+        @click="onmychanelfn(mychennel, index)"
       >
-        <van-icon slot="icon" name="clear" v-show="isedit&&!fileid.includes(mychennel.id)"></van-icon>
+        <van-icon
+          slot="icon"
+          name="clear"
+          v-show="isedit && !fileid.includes(mychennel.id)"
+        ></van-icon>
         <span class="text" slot="text" :class="{ active: active === index }">{{
           mychennel.name
         }}</span>
@@ -41,15 +50,17 @@
 </template>
 
 <script>
-import { getAllChennels } from "@/api/chennel";
+import { getAllChennels, addUserChannel, delUserChannel } from "@/api/chennel";
 import { Toast } from "vant";
+import { mapState } from "vuex";
+import { setItem } from "@/utils/storage";
 export default {
   name: "ChennelEdit",
   data() {
     return {
       AllChennels: [],
-      isedit:false,
-      fileid:[0],
+      isedit: false,
+      fileid: [0],
     };
   },
   props: {
@@ -70,32 +81,56 @@ export default {
       try {
         const { data } = await getAllChennels();
         this.AllChennels = data.data.channels;
-        console.log(this.AllChennels);
       } catch (error) {
         Toast("所有列表请求失败");
       }
     },
-    onChannel(chennel) {
+    async onChannel(chennell) {
       // 添加到我的频道中会重新走computed 推荐列表就没有了
-      this.chennel.push(chennel);
+      this.chennel.push(chennell);
+      // 判断是否登录把推荐列表存储起来
+      if (this.user) {
+        try {
+          await addUserChannel({
+            id: chennell.id,
+            seq: this.chennel.length,
+          });
+        } catch (error) {
+          Toast("列表存储失败");
+        }
+      } else {
+        setItem("TOUTIAO_CHANNEL", this.chennel);
+      }
     },
-    onmychanelfn(chennel, index){
-        if(this.isedit){
-            if(this.fileid.includes(chennel.id)){
-                return 
-            }
-           if(index <= this.active){
-            this.$emit('updata-active',this.active-1, true)
-           }
-           this.chennel.splice(index,1)
-           
+
+    onmychanelfn(mychennel, index) {
+      if (this.isedit) {
+        if (this.fileid.includes(mychennel.id)) {
+          return;
         }
-        else{
-            this.$emit('updata-active',index,false )            
+        if (index <= this.active) {
+          this.$emit("updata-active", this.active - 1, true);
         }
+        this.chennel.splice(index, 1);
+        this.delchannel(mychennel);
+      } else {
+        this.$emit("updata-active", index, false);
+      }
+    },
+    async delchannel(mychennel) {
+      try {
+        if (this.user) {
+          await delUserChannel(mychennel.id);
+        } else {
+          setItem("TOUTIAO_CHANNEL", this.chennel); 
+        }
+      } catch (error) {
+        Toast("删除失败");
+      }
     },
   },
   computed: {
+    ...mapState(["user"]),
     recommendChannel() {
       const chennels = [];
       this.AllChennels.forEach((Allobj) => {
